@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: media_pipeline_app
+
+    restart: unless-stopped
+
+    depends_on:
+      - db
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: media_pipeline
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      FLASK_ENV: production
+      PORT: 5000
+
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+
+    networks:
+      - media_network
+
+  db:
+    image: postgres:16
+
+    container_name: media_pipeline_db
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: media_pipeline
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - media_network
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d media_pipeline"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  media_network:
+    driver: bridge
