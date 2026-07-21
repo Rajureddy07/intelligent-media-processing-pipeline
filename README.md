@@ -1,16 +1,18 @@
-# Intelligent Media Processing Pipeline
+# 🚗 Intelligent Media Processing Pipeline
 
-An AI-powered backend system that accepts vehicle image uploads, processes them asynchronously, and generates structured analysis reports.
+An AI-powered backend system that processes uploaded vehicle images asynchronously and generates structured analysis reports using OCR and image processing techniques.
+
+The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**, and follows an asynchronous processing pipeline to efficiently analyze uploaded media.
 
 ---
 
-# Features
+## Features
 
-- Upload vehicle images through REST API
-- Asynchronous image processing
+- Upload vehicle images via REST API
+- Asynchronous background image processing
 - PostgreSQL database integration
-- OCR text extraction
-- Vehicle number detection & validation
+- OCR-based text extraction using EasyOCR
+- Vehicle number detection and validation
 - Blur detection
 - Brightness analysis
 - Resolution analysis
@@ -19,31 +21,34 @@ An AI-powered backend system that accepts vehicle image uploads, processes them 
 - Metadata analysis
 - Tamper detection
 - Confidence scoring
-- Retry mechanism
+- Retry mechanism for failed processing
 - Docker support
-- Logging
+- Logging and error handling
+- Automated API testing using Pytest
 
 ---
 
 # Tech Stack
 
-Backend
+### Backend
 - Python 3.12
 - Flask
 
-Database
+### Database
 - PostgreSQL
 - SQLAlchemy
 
-Image Processing
+### Image Processing
 - OpenCV
 - EasyOCR
 - Pillow
 - imagehash
 
-Utilities
-- python-dotenv
+### Utilities
 - NumPy
+- python-dotenv
+- uuid
+- threading
 
 ---
 
@@ -57,6 +62,7 @@ project/
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
+├── README.md
 │
 ├── database/
 │   ├── db.py
@@ -69,48 +75,64 @@ project/
 │
 ├── services/
 │   ├── upload_service.py
+│   ├── ocr/
 │   └── analysis/
 │
 ├── workers/
 │   ├── processor.py
 │   └── task_queue.py
 │
+├── tests/
+│
 ├── uploads/
 ├── logs/
-├── utils/
-└── README.md
+└── utils/
 ```
 
 ---
 
-# Architecture
+# System Architecture
 
 ```
-Client
-   │
-   ▼
-Upload API
-   │
-   ▼
-Store Image
-   │
-   ▼
-Save Metadata
-   │
-   ▼
-Task Queue
-   │
-   ▼
-Background Worker
-   │
-   ▼
-Image Analysis
-   │
-   ▼
-Store Results
-   │
-   ▼
-Results API
+             +----------------+
+             |     Client     |
+             +--------+-------+
+                      |
+                      |
+              POST /api/upload
+                      |
+                      ▼
+             +----------------+
+             |   Flask API    |
+             +--------+-------+
+                      |
+             Save Image & Metadata
+                      |
+                      ▼
+             +----------------+
+             | PostgreSQL DB  |
+             +--------+-------+
+                      |
+             Push Processing ID
+                      |
+                      ▼
+             +----------------+
+             |  Task Queue    |
+             +--------+-------+
+                      |
+                      ▼
+             +----------------+
+             | Background     |
+             | Worker         |
+             +--------+-------+
+                      |
+          OCR + Image Analysis Modules
+                      |
+                      ▼
+             Save Analysis Results
+                      |
+                      ▼
+             GET /api/results/{id}
 ```
 
 ---
@@ -119,22 +141,22 @@ Results API
 
 1. User uploads an image.
 2. Image is stored locally.
-3. Metadata is stored in PostgreSQL.
+3. Metadata is saved in PostgreSQL.
 4. A unique Processing ID is generated.
-5. The Processing ID is pushed to the task queue.
+5. Processing ID is pushed into the task queue.
 6. Background worker processes the image.
-7. AI analysis modules generate results.
-8. Results are stored in PostgreSQL.
-9. User fetches processing status.
-10. User retrieves analysis report.
+7. OCR extracts text.
+8. Image analysis modules execute.
+9. Results are stored in PostgreSQL.
+10. Client retrieves processing status and final report.
 
 ---
 
-# APIs
+# REST API
 
-## Upload Image
+## 1. Upload Image
 
-POST
+**POST**
 
 ```
 /api/upload
@@ -145,16 +167,16 @@ Response
 ```json
 {
   "success": true,
-  "processing_id": "...",
+  "processing_id": "xxxxxxxx",
   "status": "Pending"
 }
 ```
 
 ---
 
-## Processing Status
+## 2. Check Processing Status
 
-GET
+**GET**
 
 ```
 /api/status/<processing_id>
@@ -171,9 +193,9 @@ Response
 
 ---
 
-## Analysis Result
+## 3. Fetch Analysis Report
 
-GET
+**GET**
 
 ```
 /api/results/<processing_id>
@@ -183,68 +205,114 @@ Response
 
 ```json
 {
-  "processing_id":"...",
-  "status":"Completed",
-  "analysis":{...}
+  "processing_id": "...",
+  "status": "Completed",
+  "analysis": {
+    "...": "..."
+  }
 }
 ```
 
 ---
 
-# AI Modules
+# AI Analysis Modules
 
-- OCR Extraction
-- Vehicle Number Validation
+The background worker performs the following analyses:
+
+- OCR Text Extraction
+- Vehicle Number Detection & Validation
 - Blur Detection
-- Brightness Detection
+- Brightness Analysis
 - Resolution Analysis
-- Duplicate Detection
+- Duplicate Image Detection
 - Screenshot Detection
 - Metadata Analysis
 - Tamper Detection
-- Confidence Scoring
+- Confidence Score Generation
+
+---
+
+# Vehicle Number Detection
+
+Vehicle numbers are detected from OCR output using pattern matching and validation based on Indian registration formats.
+
+If OCR confidently extracts a valid registration number, the API returns:
+
+```json
+{
+  "vehicle_number": {
+    "number": "MH12AB1234",
+    "valid": true
+  }
+}
+```
+
+If no reliable registration number is detected, the API safely returns:
+
+```json
+{
+  "vehicle_number": {
+    "number": null,
+    "valid": false
+  }
+}
+```
+
+This avoids false positives and ensures only validated vehicle numbers are returned.
 
 ---
 
 # Queue Strategy
 
-An in-memory queue is used for asynchronous processing.
+The application uses an in-memory task queue.
 
-The Upload API immediately returns a Processing ID while the background worker processes the image independently.
+The Upload API immediately returns a Processing ID while image analysis is performed asynchronously by a background worker.
 
 ---
 
 # Database
 
-PostgreSQL
+### PostgreSQL
 
 Main table:
 
-Advertisements
+**Advertisements**
 
-Stores
+Stores:
 
 - Processing ID
-- Image path
-- Status
-- Analysis result
-- Retry count
+- Image Path
+- Processing Status
+- Analysis Report
+- Retry Count
+- Created Timestamp
 
 ---
 
-# Running Locally
+# Installation
 
-## Install dependencies
+## Clone Repository
 
+```bash
+git clone <repository-url>
+cd intelligent-media-processing-pipeline
 ```
+
+---
+
+## Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Configure environment
+---
 
-Create `.env`
+## Configure Environment Variables
 
-```
+Create a `.env` file:
+
+```env
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=offline_ads
@@ -252,15 +320,19 @@ DB_USER=postgres
 DB_PASSWORD=your_password
 ```
 
+---
+
 ## Start PostgreSQL
 
-```
+```bash
 pg_ctl start
 ```
 
-## Run application
+---
 
-```
+## Run Application
+
+```bash
 python app.py
 ```
 
@@ -268,54 +340,82 @@ python app.py
 
 # Docker
 
-```
+Build and run using Docker Compose:
+
+```bash
 docker-compose up --build
 ```
 
 ---
 
-# AI Usage Disclosure
+# Testing
 
-AI tools such as ChatGPT were used to:
+Run automated tests using Pytest:
 
-- Discuss architecture decisions
-- Improve code structure
-- Generate boilerplate
-- Suggest validation logic
-- Improve error handling
-- Help design retry mechanism
-- Improve documentation
+```bash
+python -m pytest -v
+```
 
-All generated code was manually reviewed, integrated, tested, and modified to fit the project requirements.
+Example output:
+
+```
+==========================
+3 passed in 0.99s
+==========================
+```
+
+Tests include:
+
+- Home endpoint
+- Status endpoint
+- Results endpoint
 
 ---
 
-# Trade-offs
+# AI Usage Disclosure
 
-To keep the project simple:
+Generative AI tools (ChatGPT) were used as a development assistant to:
 
-- Local storage was used instead of cloud storage.
-- An in-memory queue was used instead of RabbitMQ/SQS.
-- Simple heuristic-based tamper detection was implemented.
+- Discuss software architecture
+- Improve code organization
+- Generate boilerplate code
+- Suggest validation logic
+- Improve documentation
+- Review implementation ideas
+
+All generated code was manually reviewed, integrated, modified, tested, and validated before inclusion in the final project.
+
+---
+
+# Design Decisions & Limitations
+
+- Local storage is used instead of cloud storage.
+- An in-memory queue is used instead of RabbitMQ or AWS SQS.
 - OCR accuracy depends on image quality.
+- Vehicle number detection returns `null` when OCR confidence is insufficient instead of producing unreliable results.
+- Tamper detection is heuristic-based and intended as a lightweight solution.
 
 ---
 
 # Future Improvements
 
-- RabbitMQ
-- Redis Queue
-- Kubernetes deployment
-- Cloud storage
+- RabbitMQ / Redis Queue
+- Cloud Storage (AWS S3)
 - JWT Authentication
-- Rate limiting
-- Prometheus monitoring
-- ML-based tamper detection
-- GPU inference
-- CI/CD pipeline
+- Rate Limiting
+- Kubernetes Deployment
+- Prometheus & Grafana Monitoring
+- Dedicated License Plate Detection Model
+- Improved OCR using object detection
+- GPU Acceleration
+- CI/CD Pipeline
 
 ---
 
 # Author
 
-Rajasekhar Reddy
+**G Rajasekhar Reddy**
+
+BE Computer Science & Engineering (Data Science)
+
+Vivekananda College of Engineering and Technology

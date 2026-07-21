@@ -26,8 +26,17 @@ class AnalysisPipeline:
         # Vehicle Number
         vehicle_number = VehicleNumberDetector.detect(extracted_text)
 
-        # Validation
-        is_valid = VehicleNumberValidator.validate(vehicle_number)
+
+        # Validate only if a number was detected
+        if vehicle_number:
+            is_valid = VehicleNumberValidator.validate(vehicle_number)
+
+            # If validation fails, discard the result
+            if not is_valid:
+                vehicle_number = None
+        else:
+            vehicle_number = None
+            is_valid = False
 
         # Duplicate
         duplicate = DuplicateDetector.check_duplicate(image_path)
