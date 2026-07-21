@@ -17,21 +17,24 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency list first (improves Docker layer caching)
+# Copy dependency list
 COPY requirements.txt .
 
-# Upgrade pip and install Python packages
+# Install Python packages
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy application
 COPY . .
 
-# Create required directories
+# Create runtime folders
 RUN mkdir -p uploads logs
 
-# Expose Flask port
+# Render provides the PORT environment variable
+ENV PORT=5000
+
+# Expose application port
 EXPOSE 5000
 
-# Start the application
+# Start Flask
 CMD ["python", "app.py"]
