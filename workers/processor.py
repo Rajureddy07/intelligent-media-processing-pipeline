@@ -8,7 +8,6 @@ from database.models import Advertisement, AnalysisReport
 from services.analysis.analysis_pipeline import AnalysisPipeline
 from workers.task_queue import task_queue
 
-
 # Maximum retry attempts
 MAX_RETRIES = 2
 
@@ -31,16 +30,17 @@ def process_image(app):
 
         task = task_queue.get()
 
-        # NEW DEBUG
-        print(f"Worker received task: {task}")
+        print(f"📩 Worker received task: {task}")
 
         if task is None:
-            print("Worker stopped.")
+            print("🛑 Worker stopped.")
             break
 
         processing_id = task["processing_id"]
 
-        print(f"\n🚀 New Task Received: {processing_id}")
+        print("=" * 80)
+        print(f"🚀 Processing Started : {processing_id}")
+        print("=" * 80)
 
         with app.app_context():
 
@@ -48,20 +48,19 @@ def process_image(app):
                 processing_id=processing_id
             ).first()
 
-            if not advertisement:
+            if advertisement is None:
+
                 logging.warning(
-                    f"Advertisement not found for Processing ID: {processing_id}"
+                    f"Advertisement not found : {processing_id}"
                 )
 
-                print(f"Advertisement not found: {processing_id}")
+                print("❌ Advertisement not found.")
 
                 task_queue.task_done()
                 continue
 
             advertisement.status = "Processing"
             db.session.commit()
-
-            print(f"Status updated to Processing: {processing_id}")
 
             success = False
 
@@ -70,43 +69,75 @@ def process_image(app):
                 try:
 
                     logging.info(
-                        f"Processing {processing_id} | Attempt {advertisement.retry_count + 1}"
+                        f"Attempt {advertisement.retry_count + 1}"
                     )
 
-                    print("Starting Analysis Pipeline...")
+                    print("🔍 Running Analysis Pipeline...")
 
                     result = AnalysisPipeline.run(
                         advertisement.image_path
                     )
 
-                    print("Analysis Pipeline Completed.")
+                    print("✅ Analysis Completed")
+
+                    print("=" * 80)
+                    print("PIPELINE RESULT")
+                    print(result)
+                    print("=" * 80)
 
                     # Save image hash
-                    advertisement.image_hash = result["duplicate"]["image_hash"]
+                    advertisement.image_hash = None
+
+                    duplicate_info = result.get("duplicate")
+
+                    if isinstance(duplicate_info, dict):
+                        advertisement.image_hash = duplicate_info.get(
+                            "image_hash"
+                        )
 
                     report = AnalysisReport(
 
                         advertisement_id=advertisement.id,
 
-                        extracted_text=result["ocr"]["text"],
+                        extracted_text=result.get(
+                            "ocr_text", ""
+                        ),
 
-                        vehicle_number=result["vehicle_number"]["number"],
+                        vehicle_number=result.get(
+                            "vehicle_number", ""
+                        ),
 
-                        vehicle_number_valid=result["vehicle_number"]["valid"],
+                        vehicle_number_valid=bool(
+                            result.get("vehicle_number_valid", False)
+                        ),
 
-                        blur_score=result["image_quality"]["blur_score"],
+                        blur_score=float(
+                            result.get("blur_score", 0)
+                        ),
 
-                        brightness_score=result["image_quality"]["brightness"],
+                        brightness_score=float(
+                            result.get("brightness_score", 0)
+                        ),
 
-                        resolution=result["image_quality"]["resolution"],
+                        resolution=result.get(
+                            "resolution", ""
+                        ),
 
-                        duplicate_image=result["duplicate"]["is_duplicate"],
+                        duplicate_image=bool(
+                            result.get("duplicate_image", False)
+                        ),
 
-                        screenshot_detected=result["screenshot"]["is_screenshot"],
+                        screenshot_detected=bool(
+                            result.get("screenshot_detected", False)
+                        ),
 
-                        metadata_available=result["metadata"]["metadata_available"],
+                        metadata_available=bool(
+                            result.get("metadata_available", False)
+                        ),
 
-                        tampered=result["tamper"]["tampered"],
+                        tampered=bool(
+                            result.get("tampered", False)
+                        ),
 
                         report_json=result
 
@@ -120,22 +151,22 @@ def process_image(app):
 
                     success = True
 
-                    print(f"✅ Processing Completed: {processing_id}")
+                    print("🎉 Processing Completed Successfully")
 
                     logging.info(
-                        f"Processing Completed Successfully: {processing_id}"
+                        f"Completed : {processing_id}"
                     )
 
                 except Exception as e:
 
+                    db.session.rollback()
+
                     print("=" * 80)
-                    print(f"❌ ERROR while processing {processing_id}")
+                    print("❌ PROCESSING FAILED")
                     traceback.print_exc()
                     print("=" * 80)
 
-                    logging.exception(
-                        f"Attempt {advertisement.retry_count + 1} failed for {processing_id}"
-                    )
+                    logging.exception(str(e))
 
                     advertisement.retry_count += 1
                     db.session.commit()
@@ -147,11 +178,11 @@ def process_image(app):
 
                         db.session.commit()
 
-                        logging.exception(
-                            f"Processing Failed after {MAX_RETRIES} attempts: {processing_id}"
-                        )
+                        print("❌ Maximum Retry Limit Reached")
 
-                        print(f"❌ Processing Failed: {processing_id}")
+                        logging.error(
+                            f"Failed : {processing_id}"
+                        )
 
         task_queue.task_done()
 

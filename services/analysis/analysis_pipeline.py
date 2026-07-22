@@ -20,14 +20,21 @@ class AnalysisPipeline:
         print("=" * 80)
 
         # ---------------------------------------------------
-        # Image Quality
+        # 1. Image Quality
         # ---------------------------------------------------
         print("1️⃣ Running Image Quality Analysis...")
         image_quality = ImageQualityAnalyzer.analyze(image_path)
-        print("✅ Image Quality Analysis Completed")
+        print("✅ Image Quality Completed")
+
+        blur_score = image_quality.get("blur_score", 0)
+
+        # FIX: ImageQualityAnalyzer returns "brightness"
+        brightness_score = image_quality.get("brightness", 0)
+
+        resolution = image_quality.get("resolution", "Unknown")
 
         # ---------------------------------------------------
-        # OCR
+        # 2. OCR
         # ---------------------------------------------------
         print("2️⃣ Running OCR...")
         ocr = OCRService()
@@ -37,60 +44,70 @@ class AnalysisPipeline:
         extracted_text = ocr_result.get("text", "")
 
         # ---------------------------------------------------
-        # Vehicle Number Detection
+        # 3. Vehicle Detection
         # ---------------------------------------------------
         print("3️⃣ Detecting Vehicle Number...")
+
         vehicle_number = VehicleNumberDetector.detect(extracted_text)
-        print(f"Detected Vehicle Number: {vehicle_number}")
+
+        print(f"Vehicle Number: {vehicle_number}")
 
         # ---------------------------------------------------
-        # Vehicle Number Validation
+        # 4. Validation
         # ---------------------------------------------------
         print("4️⃣ Validating Vehicle Number...")
 
         if vehicle_number:
-            is_valid = VehicleNumberValidator.validate(vehicle_number)
-
-            if not is_valid:
-                vehicle_number = None
+            vehicle_valid = VehicleNumberValidator.validate(vehicle_number)
         else:
-            vehicle_number = None
-            is_valid = False
+            vehicle_valid = False
+            vehicle_number = ""
 
-        print(f"Vehicle Number Valid: {is_valid}")
+        print(f"Vehicle Valid: {vehicle_valid}")
 
         # ---------------------------------------------------
-        # Duplicate Detection
+        # 5. Duplicate
         # ---------------------------------------------------
-        print("5️⃣ Checking Duplicate Image...")
+        print("5️⃣ Checking Duplicate...")
+
         duplicate = DuplicateDetector.check_duplicate(image_path)
-        print("✅ Duplicate Detection Completed")
+
+        print(f"Duplicate: {duplicate}")
 
         # ---------------------------------------------------
-        # Screenshot Detection
+        # 6. Screenshot
         # ---------------------------------------------------
         print("6️⃣ Detecting Screenshot...")
+
         screenshot = ScreenshotDetector.detect(image_path)
-        print("✅ Screenshot Detection Completed")
+
+        print(f"Screenshot: {screenshot}")
 
         # ---------------------------------------------------
-        # Metadata Analysis
+        # 7. Metadata
         # ---------------------------------------------------
-        print("7️⃣ Analyzing Metadata...")
+        print("7️⃣ Reading Metadata...")
+
         metadata = MetadataAnalyzer.analyze(image_path)
-        print("✅ Metadata Analysis Completed")
+
+        metadata_available = bool(metadata)
+
+        print(f"Metadata Available: {metadata_available}")
 
         # ---------------------------------------------------
-        # Tamper Detection
+        # 8. Tamper
         # ---------------------------------------------------
         print("8️⃣ Detecting Tampering...")
+
         tamper = TamperDetector.detect(image_path)
-        print("✅ Tamper Detection Completed")
+
+        print(f"Tampered: {tamper}")
 
         # ---------------------------------------------------
-        # Confidence Score
+        # 9. Confidence
         # ---------------------------------------------------
-        print("9️⃣ Calculating Confidence Score...")
+        print("9️⃣ Calculating Confidence...")
+
         confidence = ConfidenceScorer.calculate(
             image_quality,
             ocr_result,
@@ -100,29 +117,57 @@ class AnalysisPipeline:
             metadata,
             tamper
         )
-        print("✅ Confidence Score Calculated")
+
+        # FIX: ConfidenceScorer returns "overall"
+        if isinstance(confidence, dict):
+            confidence_score = confidence.get("overall", 0)
+        else:
+            confidence_score = confidence
+
+        print(f"Confidence Score: {confidence_score}")
 
         print("=" * 80)
-        print("🎉 Analysis Pipeline Completed Successfully")
+        print("🎉 Analysis Completed Successfully")
         print("=" * 80)
 
-        return {
-            "image_quality": image_quality,
+        # ---------------------------------------------------
+        # Final Report
+        # ---------------------------------------------------
 
-            "ocr": ocr_result,
+        report = {
 
-            "vehicle_number": {
-                "number": vehicle_number,
-                "valid": is_valid
-            },
+            "ocr_text": extracted_text,
 
+            "vehicle_number": vehicle_number,
+
+            "vehicle_number_valid": vehicle_valid,
+
+            "blur_score": blur_score,
+
+            "brightness_score": brightness_score,
+
+            "resolution": resolution,
+
+            # Store simple values for the dashboard
+            "duplicate_image": duplicate.get("is_duplicate", False),
+
+            "screenshot_detected": screenshot.get("is_screenshot", False),
+
+            "metadata_available": metadata_available,
+
+            "tampered": tamper.get("tampered", False),
+
+            "confidence_score": confidence_score,
+
+            # Store detailed detector outputs for report_json
             "duplicate": duplicate,
-
             "screenshot": screenshot,
-
             "metadata": metadata,
-
             "tamper": tamper,
-
+            "image_quality": image_quality,
+            "ocr": ocr_result,
             "confidence": confidence
+
         }
+
+        return report

@@ -13,16 +13,14 @@ class ConfidenceScorer:
 
         scores = {}
 
-        # OCR Confidence
+        # OCR
         text = ocr_result.get("text", "").strip()
         scores["ocr"] = 95 if text else 20
 
-        # Vehicle Number Confidence
-        scores["vehicle_number"] = (
-            98 if vehicle_number else 25
-        )
+        # Vehicle Number
+        scores["vehicle_number"] = 98 if vehicle_number else 25
 
-        # Image Quality Confidence
+        # Image Quality
         blur = image_quality.get("blur_score", 0)
         brightness = image_quality.get("brightness", 0)
 
@@ -36,29 +34,34 @@ class ConfidenceScorer:
 
         scores["image_quality"] = max(0, quality)
 
-        # Duplicate Confidence
-        scores["duplicate"] = (
-            100 if duplicate.get("is_duplicate") else 90
-        )
+        # Duplicate
+        if isinstance(duplicate, dict):
+            is_duplicate = duplicate.get("is_duplicate", False)
+        else:
+            is_duplicate = bool(duplicate)
 
-        # Screenshot Confidence
-        scores["screenshot"] = (
-            100 if not screenshot.get("is_screenshot") else 60
-        )
+        scores["duplicate"] = 90 if not is_duplicate else 60
 
-        # Metadata Confidence
-        scores["metadata"] = (
-            100 if metadata.get("metadata_available") else 70
-        )
+        # Screenshot
+        if isinstance(screenshot, dict):
+            is_screenshot = screenshot.get("is_screenshot", False)
+        else:
+            is_screenshot = bool(screenshot)
 
-        # Tamper Confidence
-        scores["tamper"] = (
-            100 if not tamper.get("tampered") else 50
-        )
+        scores["screenshot"] = 90 if not is_screenshot else 70
 
-        overall = round(
-            sum(scores.values()) / len(scores)
-        )
+        # Metadata
+        scores["metadata"] = 100 if bool(metadata) else 70
+
+        # Tamper
+        if isinstance(tamper, dict):
+            is_tampered = tamper.get("tampered", False)
+        else:
+            is_tampered = bool(tamper)
+
+        scores["tamper"] = 100 if not is_tampered else 50
+
+        overall = round(sum(scores.values()) / len(scores))
 
         scores["overall"] = overall
 

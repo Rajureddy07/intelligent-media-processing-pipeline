@@ -27,6 +27,45 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 - Automated API testing using Pytest
 
 ---
+# 📸 Screenshots
+
+## Application Dashboard
+
+<p align="center">
+  <img src="screenshots/auto1.png" width="900">
+</p>
+
+---
+
+## Upload & Processing
+
+<p align="center">
+  <img src="screenshots/auto2.png" width="900">
+</p>
+
+---
+
+## Analysis Results
+
+<p align="center">
+  <img src="screenshots/auto3.png" width="900">
+</p>
+
+---
+
+## Processing Status
+
+<p align="center">
+  <img src="screenshots/auto4.png" width="900">
+</p>
+
+---
+
+## Terminal Execution
+
+<p align="center">
+  <img src="screenshots/terminal.png" width="900">
+</p>
 
 # Tech Stack
 
