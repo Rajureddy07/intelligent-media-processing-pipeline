@@ -1,15 +1,17 @@
+import os
 import threading
 import logging
+import traceback
 
 from database.db import db
 from database.models import Advertisement, AnalysisReport
 from services.analysis.analysis_pipeline import AnalysisPipeline
 from workers.task_queue import task_queue
-import os
 
 
 # Maximum retry attempts
 MAX_RETRIES = 2
+
 # Create logs directory if it doesn't exist
 os.makedirs("logs", exist_ok=True)
 
@@ -23,14 +25,19 @@ logging.basicConfig(
 
 def process_image(app):
 
+    print("✅ Background worker started.")
+
     while True:
 
         task = task_queue.get()
 
         if task is None:
+            print("Worker stopped.")
             break
 
         processing_id = task["processing_id"]
+
+        print(f"\n🚀 New Task Received: {processing_id}")
 
         with app.app_context():
 
@@ -42,11 +49,15 @@ def process_image(app):
                 logging.warning(
                     f"Advertisement not found for Processing ID: {processing_id}"
                 )
+                print(f"Advertisement not found: {processing_id}")
+
                 task_queue.task_done()
                 continue
 
             advertisement.status = "Processing"
             db.session.commit()
+
+            print(f"Status updated to Processing: {processing_id}")
 
             success = False
 
@@ -58,9 +69,13 @@ def process_image(app):
                         f"Processing {processing_id} | Attempt {advertisement.retry_count + 1}"
                     )
 
+                    print("Starting Analysis Pipeline...")
+
                     result = AnalysisPipeline.run(
                         advertisement.image_path
                     )
+
+                    print("Analysis Pipeline Completed.")
 
                     # Save image hash
                     advertisement.image_hash = result["duplicate"]["image_hash"]
@@ -101,19 +116,25 @@ def process_image(app):
 
                     success = True
 
+                    print(f"✅ Processing Completed: {processing_id}")
+
                     logging.info(
                         f"Processing Completed Successfully: {processing_id}"
                     )
 
                 except Exception as e:
 
-                    advertisement.retry_count += 1
-
-                    db.session.commit()
+                    print("=" * 80)
+                    print(f"❌ ERROR while processing {processing_id}")
+                    traceback.print_exc()
+                    print("=" * 80)
 
                     logging.exception(
-                        f"Attempt {advertisement.retry_count} failed for {processing_id}"
+                        f"Attempt {advertisement.retry_count + 1} failed for {processing_id}"
                     )
+
+                    advertisement.retry_count += 1
+                    db.session.commit()
 
                     if advertisement.retry_count >= MAX_RETRIES:
 
@@ -125,6 +146,8 @@ def process_image(app):
                         logging.exception(
                             f"Processing Failed after {MAX_RETRIES} attempts: {processing_id}"
                         )
+
+                        print(f"❌ Processing Failed: {processing_id}")
 
         task_queue.task_done()
 
@@ -138,3 +161,5 @@ def start_worker(app):
     )
 
     worker.start()
+
+    print("✅ Worker thread initialized.")

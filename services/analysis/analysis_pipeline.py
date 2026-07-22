@@ -14,43 +14,83 @@ class AnalysisPipeline:
     @staticmethod
     def run(image_path):
 
-        # Image Quality
-        image_quality = ImageQualityAnalyzer.analyze(image_path)
+        print("=" * 80)
+        print("🚀 Analysis Pipeline Started")
+        print(f"Image Path: {image_path}")
+        print("=" * 80)
 
+        # ---------------------------------------------------
+        # Image Quality
+        # ---------------------------------------------------
+        print("1️⃣ Running Image Quality Analysis...")
+        image_quality = ImageQualityAnalyzer.analyze(image_path)
+        print("✅ Image Quality Analysis Completed")
+
+        # ---------------------------------------------------
         # OCR
+        # ---------------------------------------------------
+        print("2️⃣ Running OCR...")
         ocr = OCRService()
         ocr_result = ocr.extract_text(image_path)
+        print("✅ OCR Completed")
 
         extracted_text = ocr_result.get("text", "")
 
-        # Vehicle Number
+        # ---------------------------------------------------
+        # Vehicle Number Detection
+        # ---------------------------------------------------
+        print("3️⃣ Detecting Vehicle Number...")
         vehicle_number = VehicleNumberDetector.detect(extracted_text)
+        print(f"Detected Vehicle Number: {vehicle_number}")
 
+        # ---------------------------------------------------
+        # Vehicle Number Validation
+        # ---------------------------------------------------
+        print("4️⃣ Validating Vehicle Number...")
 
-        # Validate only if a number was detected
         if vehicle_number:
             is_valid = VehicleNumberValidator.validate(vehicle_number)
 
-            # If validation fails, discard the result
             if not is_valid:
                 vehicle_number = None
         else:
             vehicle_number = None
             is_valid = False
 
-        # Duplicate
+        print(f"Vehicle Number Valid: {is_valid}")
+
+        # ---------------------------------------------------
+        # Duplicate Detection
+        # ---------------------------------------------------
+        print("5️⃣ Checking Duplicate Image...")
         duplicate = DuplicateDetector.check_duplicate(image_path)
+        print("✅ Duplicate Detection Completed")
 
-        # Screenshot
+        # ---------------------------------------------------
+        # Screenshot Detection
+        # ---------------------------------------------------
+        print("6️⃣ Detecting Screenshot...")
         screenshot = ScreenshotDetector.detect(image_path)
+        print("✅ Screenshot Detection Completed")
 
-        # Metadata
+        # ---------------------------------------------------
+        # Metadata Analysis
+        # ---------------------------------------------------
+        print("7️⃣ Analyzing Metadata...")
         metadata = MetadataAnalyzer.analyze(image_path)
+        print("✅ Metadata Analysis Completed")
 
-        # Tamper
+        # ---------------------------------------------------
+        # Tamper Detection
+        # ---------------------------------------------------
+        print("8️⃣ Detecting Tampering...")
         tamper = TamperDetector.detect(image_path)
+        print("✅ Tamper Detection Completed")
 
-        # Confidence
+        # ---------------------------------------------------
+        # Confidence Score
+        # ---------------------------------------------------
+        print("9️⃣ Calculating Confidence Score...")
         confidence = ConfidenceScorer.calculate(
             image_quality,
             ocr_result,
@@ -60,6 +100,11 @@ class AnalysisPipeline:
             metadata,
             tamper
         )
+        print("✅ Confidence Score Calculated")
+
+        print("=" * 80)
+        print("🎉 Analysis Pipeline Completed Successfully")
+        print("=" * 80)
 
         return {
             "image_quality": image_quality,
