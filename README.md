@@ -32,44 +32,49 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 
 ## Application Dashboard
 
-<p align="center">
-  <img src="screenshots/auto1.png" alt="Application Dashboard" width="900">
-</p>
+![Application Dashboard](screenshots/auto1.png)
 
 ---
 
-## Upload & Processing
+## Upload Image
 
-<p align="center">
-  <img src="screenshots/auto2.png" alt="Upload and Processing" width="900">
-</p>
+![Upload Image](screenshots/auto2.png)
 
 ---
 
 ## Analysis Results
 
-<p align="center">
-  <img src="screenshots/auto3.png" alt="Analysis Results" width="900">
-</p>
+![Analysis Results](screenshots/auto3.png)
 
 ---
 
 ## Processing Status
 
-<p align="center">
-  <img src="screenshots/auto4.png" alt="Processing Status" width="900">
-</p>
+![Processing Status](screenshots/auto4.png)
 
 ---
 
-## Terminal Execution
+## Analysis Completed Successfully
 
-<p align="center">
-  <img src="screenshots/terminal.png" alt="Terminal Execution" width="900">
-</p>
+![Analysis Success](screenshots/analysissucces.png)
 
 ---
 
+## PostgreSQL Database
+
+![PostgreSQL](screenshots/postgresql.png)
+
+---
+
+## PowerShell Execution
+
+![PowerShell](screenshots/powershell.png)
+
+---
+
+## Terminal Output
+
+![Terminal](screenshots/terminal.png)
 # Tech Stack
 
 ### Backend
