@@ -1,4 +1,4 @@
-# 🚗 Intelligent Media Processing Pipeline
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/458dd40a-f227-4321-8921-c2b0f1c0b3f1" /># 🚗 Intelligent Media Processing Pipeline
 
 An AI-powered backend system that processes uploaded vehicle images asynchronously and generates structured analysis reports using OCR and image processing techniques.
 
@@ -466,5 +466,7 @@ All generated code was manually reviewed, integrated, modified, tested, and vali
 **G Rajasekhar Reddy**
 
 BE Computer Science & Engineering (Data Science)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 170236" src="https://github.com/user-attachments/assets/8cd5bf9c-274b-44c3-8a50-2f7aa645766e" />
 
 Vivekananda College of Engineering and Technology
+
