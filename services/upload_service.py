@@ -40,10 +40,17 @@ class UploadService:
             db.session.add(advertisement)
             db.session.commit()
 
+            print("=" * 80)
+            print(f"Queue size before put: {task_queue.qsize()}")
+
             # Send task to background worker
             task_queue.put({
                 "processing_id": processing_id
             })
+
+            print(f"Queue size after put: {task_queue.qsize()}")
+            print(f"Task queued successfully: {processing_id}")
+            print("=" * 80)
 
             return {
                 "processing_id": processing_id,

@@ -31,6 +31,9 @@ def process_image(app):
 
         task = task_queue.get()
 
+        # NEW DEBUG
+        print(f"Worker received task: {task}")
+
         if task is None:
             print("Worker stopped.")
             break
@@ -49,6 +52,7 @@ def process_image(app):
                 logging.warning(
                     f"Advertisement not found for Processing ID: {processing_id}"
                 )
+
                 print(f"Advertisement not found: {processing_id}")
 
                 task_queue.task_done()
