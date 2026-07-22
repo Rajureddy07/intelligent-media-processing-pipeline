@@ -27,12 +27,14 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 - Automated API testing using Pytest
 
 ---
+---
+
 # 📸 Screenshots
 
 ## Application Dashboard
 
 <p align="center">
-  <img src="screenshots/auto1.png" width="900">
+  <img src="screenshots/auto1.png" alt="Application Dashboard" width="900">
 </p>
 
 ---
@@ -40,7 +42,7 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 ## Upload & Processing
 
 <p align="center">
-  <img src="screenshots/auto2.png" width="900">
+  <img src="screenshots/auto2.png" alt="Upload and Processing" width="900">
 </p>
 
 ---
@@ -48,7 +50,7 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 ## Analysis Results
 
 <p align="center">
-  <img src="screenshots/auto3.png" width="900">
+  <img src="screenshots/auto3.png" alt="Analysis Results" width="900">
 </p>
 
 ---
@@ -56,7 +58,7 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 ## Processing Status
 
 <p align="center">
-  <img src="screenshots/auto4.png" width="900">
+  <img src="screenshots/auto4.png" alt="Processing Status" width="900">
 </p>
 
 ---
@@ -64,8 +66,32 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 ## Terminal Execution
 
 <p align="center">
-  <img src="screenshots/terminal.png" width="900">
+  <img src="screenshots/terminal.png" alt="Terminal Execution" width="900">
 </p>
+
+---
+
+# Tech Stack
+
+### Backend
+- Python 3.12
+- Flask
+
+### Database
+- PostgreSQL
+- SQLAlchemy
+
+### Image Processing
+- OpenCV
+- EasyOCR
+- Pillow
+- imagehash
+
+### Utilities
+- NumPy
+- python-dotenv
+- uuid
+- threading
 
 # Tech Stack
 
