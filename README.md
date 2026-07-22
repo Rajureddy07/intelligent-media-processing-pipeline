@@ -38,43 +38,50 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 
 ## Upload Image
 
-![Upload Image](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/auto2.png)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 163147" src="https://github.com/user-attachments/assets/74adb355-ddc6-4499-baf7-d367a0f84b99" />
+
 
 ---
 
 ## Analysis Results
 
-![Analysis Results](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/auto3.png)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 163651" src="https://github.com/user-attachments/assets/ef889a6d-720b-4f1e-a010-dc47d00bf99b" />
+
 
 ---
 
 ## Processing Status
 
-![Processing Status](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/auto4.png)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 163917" src="https://github.com/user-attachments/assets/5023f4bb-e3e7-4a2d-88fd-8d8be877a082" />
+
 
 ---
 
 ## Analysis Completed Successfully
 
-![Analysis Success](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/analysissucces.png)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 170936" src="https://github.com/user-attachments/assets/898118d7-94d2-48f0-9213-8055a47bc49d" />
+
 
 ---
 
 ## PostgreSQL Database
 
-![PostgreSQL](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/postgresql.png)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 170429" src="https://github.com/user-attachments/assets/20e95ecc-d24a-4758-81c9-a80b277db513" />
+
 
 ---
 
 ## PowerShell Execution
 
-![PowerShell](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/powershell.png)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 170812" src="https://github.com/user-attachments/assets/42901034-49d0-4915-970c-c3ad80e0f26a" />
+
 
 ---
 
 ## Terminal Output
 
-![Terminal](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/terminal.png)
+<img width="1920" height="1080" alt="Screenshot 2026-07-22 170955" src="https://github.com/user-attachments/assets/c44a9a5e-82d8-4198-9ff5-c9b709f80a40" />
+
 
 ---
 
