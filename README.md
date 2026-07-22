@@ -74,8 +74,10 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 ## Terminal Output
 
 ![Terminal](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/terminal.png)
-# Tech Stack
 
+---
+
+# Tech Stack
 ### Backend
 - Python 3.12
 - Flask
