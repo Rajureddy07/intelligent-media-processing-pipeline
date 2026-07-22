@@ -29,52 +29,51 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 ---
 
 # 📸 Screenshots
-
 ## Application Dashboard
 
-![Application Dashboard](screenshots/auto1.png)
+![Application Dashboard](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/auto1.png)
 
 ---
 
 ## Upload Image
 
-![Upload Image](screenshots/auto2.png)
+![Upload Image](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/auto2.png)
 
 ---
 
 ## Analysis Results
 
-![Analysis Results](screenshots/auto3.png)
+![Analysis Results](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/auto3.png)
 
 ---
 
 ## Processing Status
 
-![Processing Status](screenshots/auto4.png)
+![Processing Status](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/auto4.png)
 
 ---
 
 ## Analysis Completed Successfully
 
-![Analysis Success](screenshots/analysissucces.png)
+![Analysis Success](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/analysissucces.png)
 
 ---
 
 ## PostgreSQL Database
 
-![PostgreSQL](screenshots/postgresql.png)
+![PostgreSQL](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/postgresql.png)
 
 ---
 
 ## PowerShell Execution
 
-![PowerShell](screenshots/powershell.png)
+![PowerShell](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/powershell.png)
 
 ---
 
 ## Terminal Output
 
-![Terminal](screenshots/terminal.png)
+![Terminal](https://raw.githubusercontent.com/Rajureddy07/intelligent-media-processing-pipeline/main/screenshots/terminal.png)
 # Tech Stack
 
 ### Backend
