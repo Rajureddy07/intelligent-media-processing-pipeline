@@ -27,7 +27,6 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 - Automated API testing using Pytest
 
 ---
----
 
 # 📸 Screenshots
 
@@ -93,29 +92,8 @@ The system is built with **Flask**, **PostgreSQL**, **EasyOCR**, and **OpenCV**,
 - uuid
 - threading
 
-# Tech Stack
-
-### Backend
-- Python 3.12
-- Flask
-
-### Database
-- PostgreSQL
-- SQLAlchemy
-
-### Image Processing
-- OpenCV
-- EasyOCR
-- Pillow
-- imagehash
-
-### Utilities
-- NumPy
-- python-dotenv
-- uuid
-- threading
-
 ---
+
 
 # Project Structure
 
